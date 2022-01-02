@@ -41,7 +41,7 @@ public class GmailService {
     private static final List<String> SCOPES = Collections.singletonList(GmailScopes.MAIL_GOOGLE_COM);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
-    static final String toEmailAddress = "ravi.kakadia@gmail.com";//"vijayvobflow@gmail.com";
+    static final String toEmailAddress = "vijayvobflow@gmail.com";
     static final String fromEmailAddress = "ravi.kakadia@gmail.com";
     static final String emailSubject = "Auditoria Interview Test Solution Submission";
     static final String emailBody = "Hi Vijay, Please find the required rtf document as an attachment.";
