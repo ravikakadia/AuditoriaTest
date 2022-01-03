@@ -8,6 +8,8 @@ import com.sun.xml.internal.messaging.saaj.packaging.mime.MessagingException;
 import java.io.*;
 import java.security.GeneralSecurityException;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.swing.text.*;
 import javax.swing.text.Document;
 import javax.swing.text.rtf.RTFEditorKit;
@@ -19,6 +21,7 @@ public class Solution {
     final static String gmailUserId = "ravi.kakadia@gmail.com";
     static String current = System.getProperty("user.dir");
     final static File file = new File(current + "\\src\\main\\resources\\SampleFile.rtf");
+    final static String dirToZip = current + "\\src\\main\\java";
 
 
     public static void main(String args[]) throws IOException, BadLocationException, javax.mail.MessagingException, GeneralSecurityException, MessagingException {
@@ -28,6 +31,13 @@ public class Solution {
         //Type of Tax Identification Number:
         //With new values  222-33-4444 and ITIN
         parseAndUpdateFile();
+
+        FileOutputStream fos = new FileOutputStream("dirCompressed.zip");
+        ZipOutputStream zipOut = new ZipOutputStream(fos);
+        File fileToZip = new File(dirToZip);
+        zipSourceCode(fileToZip, fileToZip.getName(), zipOut);
+        zipOut.close();
+        fos.close();
         //3.	Use either GMail or O365-Email API in your code and  send the updated document as attachment from your GMail
         sendGmailMessage();
     }
@@ -97,5 +107,35 @@ public class Solution {
 
         GmailService.sendMessage(service, gmailUserId);
 
+    }
+
+    public static void zipSourceCode(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
+
+        if (fileToZip.isHidden()) {
+            return;
+        }
+        if (fileToZip.isDirectory()) {
+            if (fileName.endsWith("/")) {
+                zipOut.putNextEntry(new ZipEntry(fileName));
+                zipOut.closeEntry();
+            } else {
+                zipOut.putNextEntry(new ZipEntry(fileName + "/"));
+                zipOut.closeEntry();
+            }
+            File[] children = fileToZip.listFiles();
+            for (File childFile : children) {
+                zipSourceCode(childFile, fileName + "/" + childFile.getName(), zipOut);
+            }
+            return;
+        }
+        FileInputStream fis = new FileInputStream(fileToZip);
+        ZipEntry zipEntry = new ZipEntry(fileName);
+        zipOut.putNextEntry(zipEntry);
+        byte[] bytes = new byte[1024];
+        int length;
+        while ((length = fis.read(bytes)) >= 0) {
+            zipOut.write(bytes, 0, length);
+        }
+        fis.close();
     }
 }

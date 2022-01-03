@@ -44,7 +44,7 @@ public class GmailService {
     static final String toEmailAddress = "vijayvobflow@gmail.com";
     static final String fromEmailAddress = "ravi.kakadia@gmail.com";
     static final String emailSubject = "Auditoria Interview Test Solution Submission";
-    static final String emailBody = "Hi Vijay, Please find the required rtf document as an attachment.";
+    static final String emailBody = "Hi Vijay, Please find the required rtf document and source code files as zip as attachments.";
     static final File file = Solution.file;
     /**
      * Creates an authorized Credential object.
@@ -93,6 +93,7 @@ public class GmailService {
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
 
+        File zFile = new File(System.getProperty("user.dir") + "\\dirCompressed.zip");
         MimeMessage email = new MimeMessage(session);
 
         email.setFrom(new InternetAddress(from));
@@ -111,6 +112,14 @@ public class GmailService {
 
         mimeBodyPart.setDataHandler(new DataHandler(source));
         mimeBodyPart.setFileName(file.getName());
+
+        multipart.addBodyPart(mimeBodyPart);
+
+        mimeBodyPart = new MimeBodyPart();
+        DataSource zipFile = new FileDataSource(zFile);
+
+        mimeBodyPart.setDataHandler(new DataHandler(zipFile));
+        mimeBodyPart.setFileName(zFile.getName());
 
         multipart.addBodyPart(mimeBodyPart);
         email.setContent(multipart);
